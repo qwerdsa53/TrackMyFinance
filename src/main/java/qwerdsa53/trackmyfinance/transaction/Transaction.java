@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 import qwerdsa53.trackmyfinance.user.User;
 
 import java.time.LocalDate;
-
+@Entity
+@Table(name = "transactions")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "transactions")
 public class Transaction {
 
     @Id
