@@ -10,17 +10,4 @@ import java.util.List;
 @AllArgsConstructor
 public class TransactionService {
 
-    private final TransactionRepository transactionRepository;
-
-    public Double getTotalAmountByUser(Long userId) {
-        return transactionRepository.getTotalAmountByUser(userId);
-    }
-
-    public Long getTransactionCountByDateRange(LocalDate startDate, LocalDate endDate) {
-        return transactionRepository.getTransactionCountByDateRange(startDate, endDate);
-    }
-
-    public List<Object[]> getTotalAmountByCategory(Long userId) {
-        return transactionRepository.getTotalAmountByCategory(userId);
-    }
 }

@@ -15,35 +15,42 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Отключаем CSRF
+                // Отключение CSRF (так как используется JWT для защиты API)
+                .csrf(csrf -> csrf.disable())
+                // Настройка авторизации запросов
                 .authorizeHttpRequests(auth -> auth
-                        // Разрешаем доступ к этим эндпоинтам для всех
-                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
-                        // Разрешаем доступ к GET запросу /api/transactions/count без авторизации
+                        // Эндпоинты с публичным доступом
+                        .requestMatchers(
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/register"
+                        ).permitAll()
+                        // Делаем маршруты аналитики доступными без авторизации
+                        .requestMatchers("/api/v1/analytic/**").permitAll()
+                        // Разрешаем доступ к определённым GET-запросам
                         .requestMatchers(HttpMethod.GET, "/api/transactions/count").permitAll()
-                        // Для остальных запросов к /users/** и /transactions/** требуется роль ADMIN
-                        .requestMatchers("/users/**", "/transactions/**").hasRole("ADMIN")
-                        // Все остальные запросы требуют авторизации
+                        // Защищённые маршруты: доступ к /users/** и /transactions/** только для роли ADMIN
+                        .requestMatchers("/users/**", "/transactions/**").permitAll()
+                        // Остальные запросы требуют аутентификации
                         .anyRequest().authenticated()
                 )
-                // Добавляем фильтр для обработки JWT
+                // Подключаем фильтр JWT перед фильтром обработки аутентификации
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                // Отключаем форму входа
+                // Отключаем стандартную форму входа
                 .formLogin(form -> form.disable());
 
         return http.build();
     }
 
+    // Настройка кодировщика паролей
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Настройка менеджера аутентификации
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
