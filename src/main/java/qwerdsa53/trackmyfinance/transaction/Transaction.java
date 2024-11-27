@@ -28,7 +28,8 @@ public class Transaction {
     private Double amount;
 
     @Column(nullable = false)
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private CategoryType category;
 
     @Column
     private String description;
